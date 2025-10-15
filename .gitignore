@@ -58,6 +58,13 @@ logs/
 # Streamlit
 .streamlit/secrets.toml
 
+# React / Node.js
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+frontend/bun.lockb
+
 # Testing
 .pytest_cache/
 .coverage

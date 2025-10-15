@@ -1,0 +1,298 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 262 90% 6%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 262 90% 6%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 262 90% 6%;
+
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 270 100% 75%;
+
+    --secondary: 340 82% 62%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 262 15% 96%;
+    --muted-foreground: 262 20% 45%;
+
+    --accent: 340 82% 62%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 262 20% 90%;
+    --input: 262 20% 90%;
+    --ring: 262 83% 58%;
+
+    --radius: 0.75rem;
+
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(270 100% 75%));
+    --gradient-accent: linear-gradient(135deg, hsl(262 83% 58%), hsl(340 82% 62%));
+    --gradient-subtle: linear-gradient(180deg, hsl(262 15% 98%), hsl(0 0% 100%));
+    
+    --shadow-glow: 0 0 40px hsl(262 83% 58% / 0.15);
+    --shadow-elevated: 0 10px 40px -10px hsl(262 40% 20% / 0.15);
+    
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 262 75% 6%;
+    --foreground: 0 0% 98%;
+
+    --card: 262 60% 8%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 262 60% 8%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 270 100% 75%;
+
+    --secondary: 340 82% 62%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 262 40% 15%;
+    --muted-foreground: 262 15% 65%;
+
+    --accent: 340 82% 62%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 262 40% 15%;
+    --input: 262 40% 15%;
+    --ring: 262 83% 58%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(270 100% 75%));
+    --gradient-accent: linear-gradient(135deg, hsl(262 83% 58%), hsl(340 82% 62%));
+    --gradient-subtle: linear-gradient(180deg, hsl(262 60% 8%), hsl(262 75% 6%));
+    
+    --shadow-glow: 0 0 40px hsl(262 83% 58% / 0.25);
+    --shadow-elevated: 0 10px 40px -10px hsl(0 0% 0% / 0.5);
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Newsletter content styling - BEAUTIFUL & FULL WIDTH */
+.newsletter-content {
+  @apply text-base leading-relaxed;
+  width: 100% !important;
+  max-width: none !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Override any inline styles or backend-generated max-width */
+.newsletter-content > * {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.newsletter-content div,
+.newsletter-content section,
+.newsletter-content article {
+  max-width: none !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Beautiful greeting styling */
+.newsletter-content .greeting {
+  @apply text-2xl font-semibold mb-6;
+  color: hsl(262 83% 58%) !important;
+  letter-spacing: -0.01em;
+}
+
+/* Intro section */
+.newsletter-content .intro {
+  @apply text-lg mb-8 leading-relaxed;
+  color: hsl(262 20% 35%) !important;
+  font-weight: 400;
+}
+
+/* Block sections */
+.newsletter-content .block {
+  @apply mb-10 pb-8;
+  border-bottom: 1px solid hsl(262 20% 90%);
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.newsletter-content .block:last-of-type {
+  border-bottom: none;
+}
+
+/* Block titles - Make them stand out */
+.newsletter-content .block-title {
+  @apply text-2xl font-bold mb-4;
+  color: hsl(262 90% 6%) !important;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  position: relative;
+  padding-left: 20px;
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.newsletter-content .block-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(135deg, hsl(262 83% 58%), hsl(340 82% 62%));
+  border-radius: 2px;
+}
+
+/* Block content */
+.newsletter-content .block-content {
+  @apply text-base leading-relaxed;
+  color: hsl(262 20% 25%) !important;
+  font-size: 16px;
+  line-height: 1.8;
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Trends section - Special styling */
+.newsletter-content .trends-section {
+  @apply mb-10 p-8 rounded-xl;
+  background: linear-gradient(135deg, hsl(262 83% 98%), hsl(340 82% 98%)) !important;
+  border-left: 4px solid hsl(262 83% 58%) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.newsletter-content .trends-section .block-title {
+  color: hsl(262 83% 58%) !important;
+}
+
+.newsletter-content .trends-section .block-title::before {
+  display: none;
+}
+
+/* Closing section */
+.newsletter-content .closing {
+  @apply text-lg mb-6 mt-8;
+  color: hsl(262 20% 35%) !important;
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* CTA Button */
+.newsletter-content .cta {
+  @apply inline-block px-6 py-3 rounded-lg font-semibold no-underline transition-all;
+  background: linear-gradient(135deg, hsl(262 83% 58%), hsl(340 82% 62%)) !important;
+  color: white !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transform: translateY(0);
+}
+
+.newsletter-content .cta:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Signature */
+.newsletter-content .signature {
+  @apply text-base mt-8 pt-6;
+  color: hsl(262 20% 35%) !important;
+  border-top: 2px solid hsl(262 20% 90%);
+  font-weight: 500;
+}
+
+/* Footer */
+.newsletter-content .footer {
+  @apply text-sm text-center mt-8 pt-6;
+  color: hsl(262 20% 50%) !important;
+  border-top: 1px solid hsl(262 20% 90%);
+}
+
+/* Generic headers */
+.newsletter-content h1,
+.newsletter-content h2,
+.newsletter-content h3 {
+  @apply font-bold mb-4;
+  max-width: none !important;
+  width: 100% !important;
+  letter-spacing: -0.02em;
+}
+
+.newsletter-content h1 {
+  @apply text-3xl mt-8;
+  color: hsl(262 90% 6%) !important;
+}
+
+.newsletter-content h2 {
+  @apply text-2xl mt-6;
+  color: hsl(262 90% 6%) !important;
+}
+
+.newsletter-content h3 {
+  @apply text-xl mt-4;
+  color: hsl(262 90% 6%) !important;
+}
+
+.newsletter-content p {
+  @apply mb-4;
+  max-width: none !important;
+  width: 100% !important;
+  line-height: 1.8;
+  color: hsl(262 20% 25%) !important;
+}
+
+.newsletter-content ul,
+.newsletter-content ol {
+  @apply mb-6 ml-6;
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.newsletter-content li {
+  @apply mb-3;
+  line-height: 1.7;
+  color: hsl(262 20% 25%) !important;
+}
+
+.newsletter-content a {
+  color: hsl(262 83% 58%) !important;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.newsletter-content a:hover {
+  color: hsl(340 82% 62%) !important;
+}
+
+.newsletter-content strong {
+  @apply font-semibold;
+  color: hsl(262 90% 6%) !important;
+}
+
+.newsletter-content em {
+  @apply italic;
+}
