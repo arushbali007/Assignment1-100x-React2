@@ -137,11 +137,25 @@ export default function Sources() {
       return;
     }
 
+    // Optimistic UI update - remove from list immediately
+    const originalSources = [...sources];
+    const originalStats = { ...stats };
+
     try {
+      // Update UI optimistically
+      setSources(sources.filter(s => s.id !== sourceId));
+
+      // Make API call
       await sourcesApi.delete(sourceId);
-      toast.success("Source deleted successfully!");
+
+      // Reload to get fresh data and stats
       await loadSources();
+      toast.success("Source deleted successfully!");
     } catch (error: any) {
+      // Rollback on error
+      setSources(originalSources);
+      setStats(originalStats);
+
       console.error("Delete source error:", error);
       const errorMessage = error?.message || error?.detail || "Failed to delete source";
       toast.error(errorMessage);
