@@ -7,7 +7,7 @@ from typing import Optional
 
 from app.api.dependencies import get_current_user
 from app.core.database import get_supabase
-from app.models.user import User
+from app.models.user import UserResponse
 
 router = APIRouter(prefix="/api/settings", tags=["settings"])
 
@@ -28,7 +28,7 @@ class DeliverySettingsResponse(BaseModel):
 
 
 @router.get("/delivery", response_model=DeliverySettingsResponse)
-async def get_delivery_settings(current_user: User = Depends(get_current_user)):
+async def get_delivery_settings(current_user: UserResponse = Depends(get_current_user)):
     """Get user's delivery preferences"""
     db = get_supabase()
 
@@ -50,7 +50,7 @@ async def get_delivery_settings(current_user: User = Depends(get_current_user)):
 @router.patch("/delivery")
 async def update_delivery_settings(
     settings: DeliverySettings,
-    current_user: User = Depends(get_current_user)
+    current_user: UserResponse = Depends(get_current_user)
 ):
     """Update user's delivery preferences"""
     db = get_supabase()
