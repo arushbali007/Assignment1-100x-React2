@@ -148,6 +148,10 @@ export default function Dashboard() {
                     <User className="w-4 h-4 mr-2" />
                     <span>Profile</span>
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/settings')}>
+                    <Settings className="w-4 h-4 mr-2" />
+                    <span>Morning Delivery</span>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.open('https://docs.creatorpulse.com', '_blank')}>
                     <HelpCircle className="w-4 h-4 mr-2" />
                     <span>Help & Documentation</span>

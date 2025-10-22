@@ -244,64 +244,76 @@ class DraftService:
 
     async def get_stats(self, user_id: str) -> DraftStats:
         """Get draft statistics"""
-        # Get all drafts
-        response = self.db.table("drafts").select("*").eq("user_id", user_id).execute()
+        try:
+            # Get all drafts
+            response = self.db.table("drafts").select("*").eq("user_id", user_id).execute()
 
-        if not response.data:
-            return DraftStats()
+            if not response.data:
+                return DraftStats()
 
-        drafts = response.data
+            drafts = response.data
 
-        # Calculate stats
-        accepted_count = len([d for d in drafts if d.get("outcome") == "accepted"])
-        rejected_count = len([d for d in drafts if d.get("outcome") == "rejected"])
+            # Calculate stats
+            accepted_count = len([d for d in drafts if d.get("outcome") == "accepted"])
+            rejected_count = len([d for d in drafts if d.get("outcome") == "rejected"])
 
-        # Calculate acceptance rate
-        total_outcomes = accepted_count + rejected_count
-        acceptance_rate = (accepted_count / total_outcomes * 100) if total_outcomes > 0 else 0.0
+            # Calculate acceptance rate
+            total_outcomes = accepted_count + rejected_count
+            acceptance_rate = (accepted_count / total_outcomes * 100) if total_outcomes > 0 else 0.0
 
-        stats = DraftStats(
-            total_drafts=len(drafts),
-            pending_drafts=len([d for d in drafts if d["status"] == DraftStatus.PENDING.value]),
-            reviewed_drafts=len([d for d in drafts if d["status"] == DraftStatus.REVIEWED.value]),
-            sent_drafts=len([d for d in drafts if d["status"] == DraftStatus.SENT.value]),
-            archived_drafts=len([d for d in drafts if d["status"] == DraftStatus.ARCHIVED.value]),
-            accepted_drafts=accepted_count,
-            rejected_drafts=rejected_count,
-            acceptance_rate=round(acceptance_rate, 1)
-        )
-
-        # Get last draft date
-        if drafts:
-            stats.last_draft_date = datetime.fromisoformat(
-                drafts[0]["created_at"].replace("Z", "+00:00")
+            stats = DraftStats(
+                total_drafts=len(drafts),
+                pending_drafts=len([d for d in drafts if d.get("status") == DraftStatus.PENDING.value]),
+                reviewed_drafts=len([d for d in drafts if d.get("status") == DraftStatus.REVIEWED.value]),
+                sent_drafts=len([d for d in drafts if d.get("status") == DraftStatus.SENT.value]),
+                archived_drafts=len([d for d in drafts if d.get("status") == DraftStatus.ARCHIVED.value]),
+                accepted_drafts=accepted_count,
+                rejected_drafts=rejected_count,
+                acceptance_rate=round(acceptance_rate, 1)
             )
 
-        # Calculate avg generation time
-        generation_times = []
-        for draft in drafts:
-            metadata = draft.get("metadata", {})
-            if isinstance(metadata, dict):
-                gen_time = metadata.get("generation_time_seconds")
-                if gen_time:
-                    generation_times.append(gen_time)
+            # Get last draft date
+            if drafts:
+                stats.last_draft_date = datetime.fromisoformat(
+                    drafts[0]["created_at"].replace("Z", "+00:00")
+                )
 
-        if generation_times:
-            stats.avg_generation_time = round(sum(generation_times) / len(generation_times), 2)
+            # Calculate avg generation time
+            generation_times = []
+            for draft in drafts:
+                metadata = draft.get("metadata", {})
+                if isinstance(metadata, dict):
+                    gen_time = metadata.get("generation_time_seconds")
+                    if gen_time:
+                        generation_times.append(gen_time)
 
-        # Calculate avg review time (approved_at - created_at in minutes)
-        review_times = []
-        for draft in drafts:
-            if draft.get("approved_at") and draft.get("created_at"):
-                created = datetime.fromisoformat(draft["created_at"].replace("Z", "+00:00"))
-                approved = datetime.fromisoformat(draft["approved_at"].replace("Z", "+00:00"))
-                review_time_minutes = (approved - created).total_seconds() / 60
-                review_times.append(review_time_minutes)
+            if generation_times:
+                stats.avg_generation_time = round(sum(generation_times) / len(generation_times), 2)
 
-        if review_times:
-            stats.avg_review_time_minutes = round(sum(review_times) / len(review_times), 2)
+            # Calculate avg review time (approved_at - created_at in minutes)
+            review_times = []
+            for draft in drafts:
+                if draft.get("approved_at") and draft.get("created_at"):
+                    try:
+                        created = datetime.fromisoformat(draft["created_at"].replace("Z", "+00:00"))
+                        approved = datetime.fromisoformat(draft["approved_at"].replace("Z", "+00:00"))
+                        review_time_minutes = (approved - created).total_seconds() / 60
+                        review_times.append(review_time_minutes)
+                    except (ValueError, TypeError) as e:
+                        print(f"Error parsing review time for draft: {e}")
+                        continue
 
-        return stats
+            if review_times:
+                stats.avg_review_time_minutes = round(sum(review_times) / len(review_times), 2)
+
+            return stats
+
+        except Exception as e:
+            import traceback
+            print(f"Error calculating draft stats: {e}")
+            print(traceback.format_exc())
+            # Return empty stats on error
+            return DraftStats()
 
     def _map_to_response(self, data: dict) -> DraftResponse:
         """Map database record to response model"""
