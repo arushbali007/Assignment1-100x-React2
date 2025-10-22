@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from app.api import auth, sources, content, trends, style_profiles, drafts, newsletter_sends, webhooks
+from app.api import auth, sources, content, trends, style_profiles, drafts, newsletter_sends, webhooks, settings
 from app.services.scheduler_service import scheduler_service
 
 
@@ -40,6 +40,7 @@ app.include_router(style_profiles.router)
 app.include_router(drafts.router)
 app.include_router(newsletter_sends.router)
 app.include_router(webhooks.router, prefix="/api/webhooks", tags=["webhooks"])
+app.include_router(settings.router)
 
 @app.get("/")
 async def root():

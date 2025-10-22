@@ -8,6 +8,7 @@ from app.core.database import get_supabase
 from app.services.content_service import content_service
 from app.services.trend_service import trend_service
 from app.services.draft_service import DraftService
+from app.services.morning_delivery_service import morning_delivery_service
 from app.models.draft import DraftCreate
 
 logger = logging.getLogger(__name__)
@@ -171,6 +172,15 @@ class SchedulerService:
                 trigger=CronTrigger(hour='7'),  # 7 AM
                 id='generate_drafts_daily',
                 name='Generate newsletter drafts daily',
+                replace_existing=True
+            )
+
+            # Schedule morning delivery emails (runs every hour, checks user timezones)
+            self.scheduler.add_job(
+                morning_delivery_service.send_morning_emails_for_all_users,
+                trigger=CronTrigger(hour='*'),  # Every hour
+                id='morning_delivery',
+                name='Send morning delivery emails',
                 replace_existing=True
             )
 
