@@ -189,8 +189,11 @@ class DraftService:
             # Update timestamps based on status
             if update.status == DraftStatus.REVIEWED and not existing.reviewed_at:
                 update_data["reviewed_at"] = datetime.utcnow().isoformat()
-            elif update.status == DraftStatus.SENT and not existing.sent_at:
-                update_data["sent_at"] = datetime.utcnow().isoformat()
+            elif update.status == DraftStatus.SENT:
+                if not existing.sent_at:
+                    update_data["sent_at"] = datetime.utcnow().isoformat()
+                if not existing.approved_at:
+                    update_data["approved_at"] = datetime.utcnow().isoformat()
 
         if update.subject is not None:
             update_data["subject"] = update.subject
@@ -266,6 +269,18 @@ class DraftService:
         if generation_times:
             stats.avg_generation_time = round(sum(generation_times) / len(generation_times), 2)
 
+        # Calculate avg review time (approved_at - created_at in minutes)
+        review_times = []
+        for draft in drafts:
+            if draft.get("approved_at") and draft.get("created_at"):
+                created = datetime.fromisoformat(draft["created_at"].replace("Z", "+00:00"))
+                approved = datetime.fromisoformat(draft["approved_at"].replace("Z", "+00:00"))
+                review_time_minutes = (approved - created).total_seconds() / 60
+                review_times.append(review_time_minutes)
+
+        if review_times:
+            stats.avg_review_time_minutes = round(sum(review_times) / len(review_times), 2)
+
         return stats
 
     def _map_to_response(self, data: dict) -> DraftResponse:
@@ -283,5 +298,6 @@ class DraftService:
             created_at=datetime.fromisoformat(data["created_at"].replace("Z", "+00:00")),
             updated_at=datetime.fromisoformat(data["updated_at"].replace("Z", "+00:00")),
             reviewed_at=datetime.fromisoformat(data["reviewed_at"].replace("Z", "+00:00")) if data.get("reviewed_at") else None,
+            approved_at=datetime.fromisoformat(data["approved_at"].replace("Z", "+00:00")) if data.get("approved_at") else None,
             sent_at=datetime.fromisoformat(data["sent_at"].replace("Z", "+00:00")) if data.get("sent_at") else None
         )

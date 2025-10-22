@@ -73,6 +73,7 @@ class DraftResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     reviewed_at: Optional[datetime] = None
+    approved_at: Optional[datetime] = None
     sent_at: Optional[datetime] = None
 
     class Config:
@@ -97,3 +98,4 @@ class DraftStats(BaseModel):
     archived_drafts: int = 0
     last_draft_date: Optional[datetime] = None
     avg_generation_time: Optional[float] = None
+    avg_review_time_minutes: Optional[float] = None

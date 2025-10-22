@@ -73,7 +73,9 @@ export default function Dashboard() {
         acceptanceRate: sendStats.successful_sends > 0
           ? Math.round((sendStats.successful_sends / sendStats.total_sends) * 100)
           : 85, // Default
-        avgReviewTime: draftStats.avg_generation_time
+        avgReviewTime: draftStats.avg_review_time_minutes
+          ? `${Math.floor(draftStats.avg_review_time_minutes)}m`
+          : draftStats.avg_generation_time
           ? formatTime(draftStats.avg_generation_time)
           : "18m 0s",
         engagement: sendStats.open_rate > 0
