@@ -296,6 +296,65 @@ class NewsletterSendService:
 
         return stats
 
+    async def update_from_webhook(
+        self,
+        message_id: str,
+        event_type: str,
+        timestamp: datetime
+    ) -> bool:
+        """
+        Update send record based on webhook event
+
+        Args:
+            message_id: Email message ID from provider
+            event_type: Event type (delivered, opened, clicked, bounced, complained)
+            timestamp: Event timestamp
+
+        Returns:
+            True if update successful, False otherwise
+        """
+        # Find send record by message_id
+        response = self.db.table("newsletter_sends").select("*").eq(
+            "message_id", message_id
+        ).execute()
+
+        if not response.data or len(response.data) == 0:
+            print(f"Warning: No send record found for message_id: {message_id}")
+            return False
+
+        send_record = response.data[0]
+        update_data = {"updated_at": datetime.utcnow().isoformat()}
+
+        # Update based on event type
+        if event_type == "delivered":
+            update_data["delivered_at"] = timestamp.isoformat()
+            update_data["status"] = SendStatus.DELIVERED.value
+
+        elif event_type == "opened":
+            # Set opened_at if not already set (first open)
+            if not send_record.get("opened_at"):
+                update_data["opened_at"] = timestamp.isoformat()
+                update_data["status"] = SendStatus.OPENED.value
+
+        elif event_type == "clicked":
+            # Set clicked_at if not already set (first click)
+            if not send_record.get("clicked_at"):
+                update_data["clicked_at"] = timestamp.isoformat()
+                update_data["status"] = SendStatus.CLICKED.value
+
+        elif event_type == "bounced":
+            update_data["status"] = SendStatus.BOUNCED.value
+
+        elif event_type == "complained":
+            update_data["status"] = SendStatus.COMPLAINED.value
+
+        # Update database
+        self.db.table("newsletter_sends").update(update_data).eq(
+            "id", send_record["id"]
+        ).execute()
+
+        return True
+
     async def _update_send_status(self, send_id: str, status: SendStatus):
         """Update send status"""
         update_data = {

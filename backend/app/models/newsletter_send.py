@@ -14,6 +14,7 @@ class SendStatus(str, Enum):
     DELIVERED = "delivered"   # Confirmed delivered
     OPENED = "opened"         # Email opened (if tracking enabled)
     CLICKED = "clicked"       # Link clicked (if tracking enabled)
+    COMPLAINED = "complained"  # Marked as spam
 
 
 class SendCreate(BaseModel):

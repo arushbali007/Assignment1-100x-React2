@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     # Resend
     RESEND_API_KEY: str
     RESEND_FROM_EMAIL: str = "onboarding@resend.dev"  # Default Resend test email
+    RESEND_WEBHOOK_SECRET: Optional[str] = None  # For webhook signature verification
 
     # Twitter API (optional)
     TWITTER_API_KEY: Optional[str] = None
