@@ -70,7 +70,9 @@ export default function Dashboard() {
       // Process stats
       setStats({
         draftsThisWeek: draftStats.total_drafts || 0,
-        acceptanceRate: sendStats.successful_sends > 0
+        acceptanceRate: draftStats.acceptance_rate > 0
+          ? Math.round(draftStats.acceptance_rate)
+          : sendStats.successful_sends > 0
           ? Math.round((sendStats.successful_sends / sendStats.total_sends) * 100)
           : 85, // Default
         avgReviewTime: draftStats.avg_review_time_minutes

@@ -194,6 +194,16 @@ class DraftService:
                     update_data["sent_at"] = datetime.utcnow().isoformat()
                 if not existing.approved_at:
                     update_data["approved_at"] = datetime.utcnow().isoformat()
+                # Auto-set outcome to accepted when sent
+                if not existing.outcome:
+                    update_data["outcome"] = "accepted"
+
+        # Handle explicit outcome updates
+        if update.outcome is not None:
+            update_data["outcome"] = update.outcome
+
+        if update.rejection_reason is not None:
+            update_data["rejection_reason"] = update.rejection_reason
 
         if update.subject is not None:
             update_data["subject"] = update.subject
@@ -243,12 +253,22 @@ class DraftService:
         drafts = response.data
 
         # Calculate stats
+        accepted_count = len([d for d in drafts if d.get("outcome") == "accepted"])
+        rejected_count = len([d for d in drafts if d.get("outcome") == "rejected"])
+
+        # Calculate acceptance rate
+        total_outcomes = accepted_count + rejected_count
+        acceptance_rate = (accepted_count / total_outcomes * 100) if total_outcomes > 0 else 0.0
+
         stats = DraftStats(
             total_drafts=len(drafts),
             pending_drafts=len([d for d in drafts if d["status"] == DraftStatus.PENDING.value]),
             reviewed_drafts=len([d for d in drafts if d["status"] == DraftStatus.REVIEWED.value]),
             sent_drafts=len([d for d in drafts if d["status"] == DraftStatus.SENT.value]),
-            archived_drafts=len([d for d in drafts if d["status"] == DraftStatus.ARCHIVED.value])
+            archived_drafts=len([d for d in drafts if d["status"] == DraftStatus.ARCHIVED.value]),
+            accepted_drafts=accepted_count,
+            rejected_drafts=rejected_count,
+            acceptance_rate=round(acceptance_rate, 1)
         )
 
         # Get last draft date
@@ -295,6 +315,8 @@ class DraftService:
             status=DraftStatus(data["status"]),
             metadata=DraftMetadata(**data["metadata"]) if data.get("metadata") else DraftMetadata(),
             notes=data.get("notes"),
+            outcome=data.get("outcome"),
+            rejection_reason=data.get("rejection_reason"),
             created_at=datetime.fromisoformat(data["created_at"].replace("Z", "+00:00")),
             updated_at=datetime.fromisoformat(data["updated_at"].replace("Z", "+00:00")),
             reviewed_at=datetime.fromisoformat(data["reviewed_at"].replace("Z", "+00:00")) if data.get("reviewed_at") else None,

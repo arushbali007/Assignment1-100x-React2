@@ -26,6 +26,7 @@ import {
   User,
   LogOut,
   HelpCircle,
+  XCircle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -191,6 +192,26 @@ export default function Drafts() {
     } catch (error: any) {
       console.error("Delete draft error:", error);
       toast.error(error?.message || "Failed to delete draft");
+    }
+  };
+
+  const handleRejectDraft = async () => {
+    if (!selectedDraft) return;
+
+    const reason = prompt("Why are you rejecting this draft? (optional)");
+    if (reason === null) return; // User cancelled
+
+    try {
+      await draftsApi.update(selectedDraft.id, {
+        outcome: "rejected",
+        rejection_reason: reason || undefined,
+        status: "archived"
+      });
+      toast.success("Draft rejected");
+      await loadData();
+    } catch (error: any) {
+      console.error("Reject draft error:", error);
+      toast.error(error?.message || "Failed to reject draft");
     }
   };
 
@@ -414,6 +435,15 @@ export default function Drafts() {
                     >
                       <Copy className="w-4 h-4 mr-2" />
                       Copy
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRejectDraft}
+                      className="text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50"
+                    >
+                      <XCircle className="w-4 h-4 mr-2" />
+                      Reject
                     </Button>
                     <Button
                       size="sm"

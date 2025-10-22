@@ -57,6 +57,8 @@ class DraftUpdate(BaseModel):
     plain_content: Optional[str] = None
     content_data: Optional[DraftContent] = None
     notes: Optional[str] = None
+    outcome: Optional[str] = None  # 'accepted', 'rejected'
+    rejection_reason: Optional[str] = None
 
 
 class DraftResponse(BaseModel):
@@ -70,6 +72,8 @@ class DraftResponse(BaseModel):
     status: DraftStatus
     metadata: DraftMetadata
     notes: Optional[str] = None
+    outcome: Optional[str] = None
+    rejection_reason: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     reviewed_at: Optional[datetime] = None
@@ -96,6 +100,9 @@ class DraftStats(BaseModel):
     reviewed_drafts: int = 0
     sent_drafts: int = 0
     archived_drafts: int = 0
+    accepted_drafts: int = 0
+    rejected_drafts: int = 0
+    acceptance_rate: float = 0.0
     last_draft_date: Optional[datetime] = None
     avg_generation_time: Optional[float] = None
     avg_review_time_minutes: Optional[float] = None
