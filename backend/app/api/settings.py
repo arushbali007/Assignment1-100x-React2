@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 from app.api.dependencies import get_current_user
-from app.core.database import get_db_client
+from app.core.database import get_supabase
 from app.models.user import User
 
 router = APIRouter(prefix="/api/settings", tags=["settings"])
@@ -30,7 +30,7 @@ class DeliverySettingsResponse(BaseModel):
 @router.get("/delivery", response_model=DeliverySettingsResponse)
 async def get_delivery_settings(current_user: User = Depends(get_current_user)):
     """Get user's delivery preferences"""
-    db = get_db_client()
+    db = get_supabase()
 
     response = db.table("users").select("*").eq("id", current_user.id).execute()
 
@@ -53,7 +53,7 @@ async def update_delivery_settings(
     current_user: User = Depends(get_current_user)
 ):
     """Update user's delivery preferences"""
-    db = get_db_client()
+    db = get_supabase()
 
     # Validate delivery_time format
     try:

@@ -8,7 +8,7 @@ import hashlib
 import os
 from datetime import datetime
 
-from app.core.database import get_db_client
+from app.core.database import get_supabase
 from app.services.newsletter_send_service import NewsletterSendService
 
 router = APIRouter()
@@ -87,8 +87,8 @@ async def resend_webhook(
         return {"status": "ignored", "reason": "no_message_id"}
 
     # Get database client
-    db = get_db_client()
-    send_service = NewsletterSendService()
+    db = get_supabase()
+    send_service = NewsletterSendService(db)
 
     # Handle different event types
     try:

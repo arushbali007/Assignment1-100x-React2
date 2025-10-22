@@ -4,7 +4,7 @@ Morning delivery service - Automated email delivery at user's configured time
 from datetime import datetime, time as time_type
 import pytz
 from typing import List, Optional
-from app.core.database import get_db_client
+from app.core.database import get_supabase
 from app.services.email_service import EmailService
 from app.services.draft_service import DraftService
 from app.services.trend_service import TrendService
@@ -14,7 +14,7 @@ class MorningDeliveryService:
     """Handle automated morning email delivery"""
 
     def __init__(self):
-        self.db = get_db_client()
+        self.db = get_supabase()
         self.email_service = EmailService()
         self.draft_service = DraftService(self.db)
         self.trend_service = TrendService()
